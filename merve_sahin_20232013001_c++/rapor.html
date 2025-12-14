@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>CPU Zamanlama Simülasyonu</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #333; padding: 5px; text-align: center; }
+        .gantt { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>CPU Zamanlama Simülasyonu</h1>
+
+    <h2>FCFS - Süreç Özeti</h2>
+    <table id="fcfsTable">
+        <thead>
+            <tr><th>PID</th><th>Arrival</th><th>Start</th><th>Finish</th><th>Waiting</th><th>Turnaround</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>SJF - Süreç Özeti</h2>
+    <table id="sjfTable">
+        <thead>
+            <tr><th>PID</th><th>Arrival</th><th>Start</th><th>Finish</th><th>Waiting</th><th>Turnaround</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>FCFS Gantt Tablosu</h2>
+    <div id="fcfsGantt" class="gantt"></div>
+
+    <h2>SJF Gantt Tablosu</h2>
+    <div id="sjfGantt" class="gantt"></div>
+
+    <h2>Throughput</h2>
+    <label>T değeri: <input type="number" id="Tvalue" value="100"> 
+        <button onclick="updateThroughput()">Güncelle</button>
+    </label>
+    <div id="throughput"></div>
+
+    <script>
+        // Basit örnek veri
+        const fcfsProcesses = [
+            {pid:"P1", arrival:0, start:0, finish:5, waiting:0, turnaround:5},
+            {pid:"P2", arrival:2, start:5, finish:9, waiting:3, turnaround:7},
+            {pid:"P3", arrival:4, start:9, finish:12, waiting:5, turnaround:8}
+        ];
+
+        const sjfProcesses = [
+            {pid:"P1", arrival:0, start:0, finish:5, waiting:0, turnaround:5},
+            {pid:"P3", arrival:4, start:5, finish:8, waiting:1, turnaround:4},
+            {pid:"P2", arrival:2, start:8, finish:12, waiting:6, turnaround:10}
+        ];
+
+        function fillTable(id, data){
+            const tbody = document.getElementById(id).querySelector("tbody");
+            tbody.innerHTML = "";
+            for(let p of data){
+                tbody.innerHTML += `<tr>
+                    <td>${p.pid}</td><td>${p.arrival}</td><td>${p.start}</td>
+                    <td>${p.finish}</td><td>${p.waiting}</td><td>${p.turnaround}</td>
+                </tr>`;
+            }
+        }
+
+        function drawGantt(id, data){
+            const container = document.getElementById(id);
+            container.innerHTML = "";
+            for(let p of data){
+                container.innerHTML += `[ ${p.start} -- ${p.pid} -- ${p.finish} ] `;
+            }
+        }
+
+        function updateThroughput(){
+            const T = parseInt(document.getElementById("Tvalue").value);
+            const fcfsCompleted = fcfsProcesses.filter(p=>p.finish<=T).length;
+            const sjfCompleted = sjfProcesses.filter(p=>p.finish<=T).length;
+            document.getElementById("throughput").innerHTML =
+                `T=${T} için FCFS tamamlanan iş sayısı: ${fcfsCompleted}<br>` +
+                `T=${T} için SJF tamamlanan iş sayısı: ${sjfCompleted}`;
+        }
+
+        // Sayfa açıldığında tablo ve gantt çiz
+        fillTable("fcfsTable", fcfsProcesses);
+        fillTable("sjfTable", sjfProcesses);
+        drawGantt("fcfsGantt", fcfsProcesses);
+        drawGantt("sjfGantt", sjfProcesses);
+        updateThroughput();
+    </script>
+</body>
+</html>
